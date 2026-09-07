@@ -22,4 +22,8 @@
     area.textContent = `Serving ${c.serviceArea}${c.serviceMode ? ' · ' + c.serviceMode : ''}`;
     area.hidden = false;
   }
+  const demos = [...document.querySelectorAll('.demo-video')];
+  demos.forEach(video => video.addEventListener('play', () => {
+    demos.forEach(other => { if (other !== video) other.pause(); });
+  }));
 })();

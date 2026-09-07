@@ -1,3 +1,6 @@
 checks/
 node_modules/
 .DS_Store
+# Original recordings stay local. Publish only optimized copies in assets/videos/.
+/75ADDA16-EE44-4CAE-B040-3C6A7E95B6D8segment_video_2.mp4
+/IMG_1060.MOV

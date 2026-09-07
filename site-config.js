@@ -5,6 +5,6 @@ window.NORTHLINE = {
   startingPrice: '350',
   primaryContact: 'sms', // sms | whatsapp | call
   serviceArea: '',
-  serviceMode: '',
-  enquiry: 'Hi Northline Retrofit! I would like to check CarPlay compatibility. My BMW year/model is: '
+  serviceMode: 'Mobile installation available — we come to you',
+  enquiry: 'Hi Northline Retrofit! I would like to check CarPlay compatibility and mobile installation. My BMW year/model is: \nMy location is: '
 };
