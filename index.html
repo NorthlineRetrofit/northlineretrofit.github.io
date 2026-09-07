@@ -13,6 +13,8 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
   <script src="site-config.js" defer></script>
+  <script src="compatibility-data.js" defer></script>
+  <script src="compatibility.js" defer></script>
   <script src="site.js" defer></script>
 </head>
 <body>
@@ -32,7 +34,7 @@
     <div class="container header-inner">
       <a class="wordmark" href="#" aria-label="Northline Retrofit home"><span>NORTHLINE</span><span>RETROFIT</span></a>
       <nav aria-label="Main navigation"><a href="#upgrade">The upgrade</a><a href="#demos">Real installs</a><a href="#how-it-works">How it works</a><a href="#questions">Questions</a></nav>
-      <a class="header-contact" href="#contact">Check your BMW <svg class="icon"><use href="#i-arrow"/></svg></a>
+      <a class="header-contact" href="#compatibility">Check your BMW <svg class="icon"><use href="#i-arrow"/></svg></a>
     </div>
   </header>
 
@@ -44,7 +46,7 @@
           <h1 id="hero-title">Your BMW.<br>A <span>smarter drive.</span></h1>
           <p class="hero-intro">Wireless CarPlay + Android Auto.<br>Your factory screen. Your original interior.</p>
           <p class="hero-description">Bring your maps, music and calls into the drive. Mobile installation available—we come to you, with a typical installation taking about 2 hours.</p>
-          <div class="hero-actions"><a class="button button-primary" data-primary-contact href="sms:+16199537761"><svg class="icon"><use href="#i-message"/></svg><span data-primary-label>Text to check compatibility</span><svg class="icon arrow"><use href="#i-arrow"/></svg></a><a class="quiet-link" href="#demos">Watch real installations <span aria-hidden="true">↘</span></a></div>
+          <div class="hero-actions"><a class="button button-primary" href="#compatibility"><svg class="icon"><use href="#i-message"/></svg><span>Check your BMW</span><svg class="icon arrow"><use href="#i-arrow"/></svg></a><a class="quiet-link" href="#demos">Watch real installations <span aria-hidden="true">↘</span></a></div>
           <div class="hero-price"><span>INSTALLATION FROM</span><strong>$<span data-price>350</span></strong><span class="price-detail">Compatibility first.<br>Your quote before booking.</span></div>
         </div>
         <figure class="hero-visual">
@@ -64,6 +66,33 @@
           <article class="feature"><div class="feature-top"><svg class="icon"><use href="#i-dial"/></svg><span>02</span></div><h3>Keep what feels familiar.</h3><p>Retain your original screen and factory iDrive controls. An upgrade that works with the interior you already enjoy.</p><div class="feature-label">ORIGINAL SCREEN + iDRIVE</div></article>
           <article class="feature"><div class="feature-top"><svg class="icon"><use href="#i-mobile-install"/></svg><span>03</span></div><h3>About 2 hours.<br>We come to you.</h3><p>Mobile installation brings the upgrade to you. Send your location with your BMW details to confirm availability and arrange a convenient installation.</p><div class="feature-label">2-HOUR INSTALL · MOBILE SERVICE</div></article>
         </div>
+      </div>
+    </section>
+
+    <section class="section compatibility-section" id="compatibility" aria-labelledby="compatibility-title">
+      <div class="container">
+        <div class="section-heading"><div><p class="eyebrow">START WITH YOUR BMW</p><h2 id="compatibility-title">Your model.<br><span>The right connection.</span></h2></div><p>Select your model and year to start a compatibility enquiry. We confirm the factory screen, system and correct interface before quoting.</p></div>
+        <div id="compatibility-app" hidden>
+          <form id="compatibility-form" class="compatibility-grid">
+            <div class="compatibility-fields">
+              <div class="compatibility-field"><label for="bmw-model">Series / model <span aria-hidden="true">*</span></label><select id="bmw-model" name="model" required aria-describedby="model-help"><option value="">Choose your BMW</option></select><small id="model-help">For example: 328i → 3 Series. Choose the separate GT option for Gran Turismo.</small></div>
+              <div class="compatibility-field"><label for="bmw-year">Model year <span aria-hidden="true">*</span></label><select id="bmw-year" name="year" required><option value="">Choose year</option></select><small>Use your vehicle’s model year, if known.</small></div>
+              <div class="compatibility-field full"><label for="bmw-variant">Exact model / body style <span>(optional)</span></label><input id="bmw-variant" name="variant" maxlength="80" placeholder="e.g. 328i GT, X5 xDrive35i, M340i" autocomplete="off"><small>M Sport trim? Choose the underlying Series or X model, not M3/M5.</small></div>
+              <div class="compatibility-field full"><label for="bmw-location">Installation city or ZIP <span>(optional)</span></label><input id="bmw-location" name="location" maxlength="100" placeholder="Where would you like us to come?" autocomplete="off"></div>
+              <details class="compatibility-system full"><summary>Know your factory system? <span aria-hidden="true">+</span></summary><label for="bmw-system">Current screen / infotainment system</label><select id="bmw-system" name="system"><option value="unknown">Not sure — check my dashboard photo</option></select><p>No need to remove any trim. A photo of the main BMW menu helps us identify your system.</p></details>
+            </div>
+            <div class="compatibility-summary">
+              <p class="eyebrow light">COMPATIBILITY ENQUIRY / NOT A FITMENT GUARANTEE</p>
+              <div id="compatibility-result" role="status" aria-live="polite" aria-atomic="true"><h3 id="compatibility-result-title">Let’s check your setup.</h3><p id="compatibility-result-detail">Choose a model and year. We’ll use the research as a starting point, then confirm your individual BMW.</p><p id="compatibility-platforms" hidden></p></div>
+              <div class="compatibility-photo-note"><svg class="icon"><use href="#i-screen"/></svg><p>Attach a dashboard photo in your message.<br><span>Show the original BMW main menu and screen.</span></p></div>
+              <a class="button button-primary" id="compatibility-send" data-primary-contact href="sms:+16199537761"><svg class="icon"><use href="#i-message"/></svg><span data-primary-label>Text to check compatibility</span><svg class="icon arrow"><use href="#i-arrow"/></svg></a>
+              <div class="compatibility-alternatives"><a id="compatibility-whatsapp" data-whatsapp href="https://wa.me/16199537761">Send via WhatsApp ↗</a><a data-call href="tel:+16199537761">Prefer to call?</a></div>
+              <p class="compatibility-privacy">Selections stay on this page. Nothing is uploaded or sent until you choose to send the message in your own app. Photos must be attached there.</p>
+            </div>
+          </form>
+          <details class="compatibility-research"><summary>What this guide covers <span aria-hidden="true">+</span></summary><p>This is a broad, supplier-researched enquiry list—not a verified list for one particular MMI box. Year windows are approximate; build month, market, screen size, audio connections and previous retrofits can change the answer. A listed model is not automatically compatible, and an unlisted year is not automatically excluded. Research checked September 7, 2026.</p><p>The catalogue covers documented CCC/M-ASK, CIC, NBT and NBT EVO routes, plus selected basic-system configurations. Newer iDrive systems and less-documented variants require individual review. Sources do not imply that Northline installs or is affiliated with those brands.</p><div id="compatibility-source-links"><a href="https://www.bimmer-tech.net/blog/item/49-how-to-retrofit-carplay" target="_blank" rel="noopener noreferrer">BimmerTech: MMI requirements ↗</a><a href="https://www.mr12volt.com/collections/bmw" target="_blank" rel="noopener noreferrer">Mr12Volt: system-specific interfaces ↗</a></div><div id="compatibility-matched-sources"></div></details>
+        </div>
+        <p id="compatibility-fallback">You can also <a class="inline-link" data-primary-contact href="sms:+16199537761">text your year, model and dashboard photo</a> for a personal compatibility check.</p>
       </div>
     </section>
 
@@ -120,6 +149,6 @@
   </main>
 
   <footer class="site-footer"><div class="container footer-inner"><a class="wordmark" href="#" aria-label="Northline Retrofit home"><span>NORTHLINE</span><span>RETROFIT</span></a><p>Independent retrofit installation for compatible BMW vehicles.</p><a href="#main">Back to top ↑</a></div></footer>
-  <div class="mobile-contact"><a class="mobile-call" data-call href="tel:+16199537761" aria-label="Call Northline Retrofit"><svg class="icon"><use href="#i-phone"/></svg></a><a class="button button-primary" data-primary-contact href="sms:+16199537761"><svg class="icon"><use href="#i-message"/></svg><span data-primary-label>Text to check compatibility</span></a></div>
+  <div class="mobile-contact"><a class="mobile-call" data-call href="tel:+16199537761" aria-label="Call Northline Retrofit"><svg class="icon"><use href="#i-phone"/></svg></a><a class="button button-primary" href="#compatibility"><svg class="icon"><use href="#i-message"/></svg><span>Check your BMW</span></a></div>
 </body>
 </html>
