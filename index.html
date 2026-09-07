@@ -70,7 +70,14 @@
     <section class="section demo-section" id="demos" aria-labelledby="demo-title">
       <div class="container">
         <div class="section-heading"><div><p class="eyebrow">REAL BMWs. REAL INSTALLATIONS.</p><h2 id="demo-title">See the connection.<br><span>In the original interior.</span></h2></div><p>Two real vehicle demos, filmed on a phone. Tap play to see CarPlay in action. Compatibility is checked for your individual BMW.</p></div>
-        <div class="demo-grid">
+        <div class="demo-navigation" hidden>
+          <div class="demo-models" role="group" aria-label="Choose a vehicle demo">
+            <button type="button" data-demo-index="0" aria-controls="demo-track" aria-pressed="true">2013 X5 <span>E70</span></button>
+            <button type="button" data-demo-index="1" aria-controls="demo-track" aria-pressed="false">2015 328i GT <span>F34</span></button>
+          </div>
+          <p class="demo-swipe-hint"><span>Swipe to explore · Tap play to watch</span><span data-demo-status aria-live="polite" aria-atomic="true">1 / 2</span></p>
+        </div>
+        <div class="demo-grid" id="demo-track" role="group" aria-label="BMW video demonstrations">
           <article class="demo-card" aria-labelledby="e70-title">
             <div class="demo-card-heading"><div><p class="eyebrow">E70 / 2013</p><h3 id="e70-title">BMW X5</h3></div><span class="demo-duration">38 sec</span></div>
             <video class="demo-video" controls playsinline preload="none" poster="assets/posters/bmw-x5-e70-2013.jpg" width="720" height="1280" aria-label="2013 BMW X5 E70 CarPlay demonstration" aria-describedby="e70-description"><source src="assets/videos/bmw-x5-e70-2013.mp4" type="video/mp4"><a href="assets/videos/bmw-x5-e70-2013.mp4">Watch the 2013 BMW X5 demo</a></video>
