@@ -31,3 +31,10 @@ test('actual system overrides model/year suggestions',()=>{
   assert.match(d.assess('i3',2016).detail,/6.5-inch/);
   assert.match(d.assess('5',2019).title,/Factory-system/);
 });
+test('customer results are simple, conditional and conservative for special cases',()=>{
+  for(const [model,year] of [['x5',2013],['3gt',2015]])assert.equal(d.customerResult(model,year).title,'Potentially compatible');
+  for(const [model,year] of [['other',NaN],['x5',2025],['5',2019],['i3',2016],['m2',2018]])assert.equal(d.customerResult(model,year).title,'Needs a manual check');
+  for(const m of d.models)for(let y=1995;y<=2027;y++){
+    const result=d.customerResult(m.id,y);assert.ok(['potential','manual'].includes(result.status));assert.match(result.detail,/photo/);
+  }
+});

@@ -102,7 +102,16 @@
     else if(system!=='unknown'&&matches.length&&!matches.some(r=>r.systems.includes(system))){title='System does not match our screening data';detail='Your selected system differs from the systems documented here for this model/year. A retrofit or regional variation may explain it. We will verify the hardware from your dashboard photo.';}
     return{title,detail,matches,refs:[...new Set(matches.flatMap(r=>r.refs))]};
   }
-  const api={reviewed:'2026-09-07',models,rows,sources,systems,assess};
+  function customerResult(model,year){
+    const result=assess(model,year);
+    if(result.matches.length&&!result.matches.some(row=>row.review))return{status:'potential',title:'Potentially compatible',detail:'CarPlay retrofit options are documented for this model range. We need a dashboard photo to confirm your factory screen and the right kit.'};
+    let detail='We can’t confirm this model/year from the guide. Send a dashboard photo and we’ll check your options—an upgrade may still be possible.';
+    if(result.matches.some(row=>row.review==='mixed'))detail='Your BMW may have different factory systems or already have CarPlay. Send a dashboard photo so we can check the right option for you.';
+    else if(result.matches.some(row=>row.review==='screen'))detail='Screen size changes the options for this BMW. Send a dashboard photo so we can check your display before confirming compatibility.';
+    else if(result.matches.length)detail='We need to check your exact version of this BMW. Send a dashboard photo so we can confirm the factory system and a suitable kit.';
+    return{status:'manual',title:'Needs a manual check',detail};
+  }
+  const api={reviewed:'2026-09-07',models,rows,sources,systems,assess,customerResult};
   root.NORTHLINE_COMPATIBILITY=api;
   if(typeof module!=='undefined')module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
