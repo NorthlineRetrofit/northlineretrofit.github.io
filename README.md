@@ -19,6 +19,7 @@ Run `python3 -m http.server 8769 --bind 127.0.0.1` from this folder. Open `http:
 - `assets/videos/`: mobile-friendly H.264/AAC MP4 copies of the supplied 2013 BMW X5 (E70) and 2015 BMW 328i GT (F34) demos. Full duration, portrait framing and audio are retained. Video dimensions are 720 × 1280 at 30 fps, with fast-start metadata. Videos use native controls, inline mobile playback and `preload="none"`; only one plays at a time.
 - `assets/posters/`: JPEG stills extracted from those videos, not generated images.
 - At phone widths (760 px and below), demos use a native horizontal scroll-snap carousel: one model at a time, swipe or use the model buttons. Switching models pauses the outgoing video without auto-playing the next. Keyboard users can select a model button or use Left/Right/Home/End on the carousel. Desktop retains the two-column view.
+- At desktop widths (1200 px and above), a separate presentation layer uses a wider hero, horizontal calls to action, roomier feature cards, side-by-side compatibility/result panels, an editorial video layout, clearer process/FAQ columns and an explicitly labeled “What to send” checklist. These rules are isolated in a minimum-width media query; the established phone and tablet layouts are unchanged.
 - The two original recordings remain local and are explicitly ignored by Git. The optimized copies are approximately 9.5 MB / 38 seconds (E70) and 1.2 MB / 5 seconds (F34).
 
 ## Publish

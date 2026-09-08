@@ -57,3 +57,99 @@
   .hero-actions .quiet-link{display:inline-flex;min-height:32px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* Desktop composition. Kept at 1200px and above so the established phone and tablet
+   layouts, carousel behavior, touch targets and fixed contact bar do not change. */
+@media(min-width:1200px){
+  :root{--content:1280px}
+  .container{width:min(var(--content),calc(100% - 96px))}
+  .site-header{position:sticky;top:0;z-index:20;background:#0a1321f5;backdrop-filter:blur(14px)}
+  .header-inner{min-height:78px}
+  .header-inner nav{gap:36px}
+  .header-inner nav a{position:relative}
+  .header-inner nav a:after{content:"";position:absolute;left:0;right:100%;bottom:8px;height:1px;background:var(--blue-bright);transition:right .18s ease}
+  .header-inner nav a:hover:after,.header-inner nav a:focus-visible:after{right:0}
+  .header-contact{padding:13px 18px;background:#ffffff05}
+
+  .hero{position:relative;padding-top:84px;background:radial-gradient(circle at 72% 34%,#163457 0,#0a132100 34%),var(--navy-deep)}
+  .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:160px 100%;mask-image:linear-gradient(90deg,transparent,#000 48%,transparent);pointer-events:none}
+  .hero-grid,.assurance-row{position:relative;z-index:1}
+  .hero-grid{grid-template-columns:minmax(440px,.82fr) minmax(560px,1.18fr);gap:78px;align-items:center}
+  .hero-copy{padding-block:20px 35px}
+  h1{font-size:clamp(68px,5.45vw,84px);line-height:.99;letter-spacing:-4.4px;max-width:610px;margin-bottom:31px}
+  .hero-intro{font-size:22px;line-height:1.5}
+  .hero-description{max-width:500px;font-size:16px;line-height:1.75}
+  .hero-actions{flex-direction:row;align-items:center;gap:28px}
+  .hero-actions .button{min-width:205px}
+  .hero-actions .quiet-link{min-height:54px}
+  .hero-price{max-width:520px;margin-top:42px;padding-top:28px}
+  .hero-price strong{font-size:46px}
+  .hero-visual{box-shadow:0 30px 70px #0000003d}
+  .photo-masthead{padding:18px 22px}
+  .hero-visual figcaption{padding:25px 23px}
+  .assurance-row{margin-top:72px;padding:23px 4px 25px}
+
+  .section{padding:112px 0}
+  h2{font-size:50px;line-height:1.08;letter-spacing:-2.2px}
+  .section-heading{display:grid;grid-template-columns:minmax(0,1fr) 380px;align-items:end;gap:70px;margin-bottom:52px}
+  .section-heading>p{max-width:380px;font-size:16px}
+
+  .feature-grid{gap:18px;border:0}
+  .feature{display:flex;flex-direction:column;min-height:370px;padding:34px 32px 27px;border:1px solid var(--line);background:var(--paper);box-shadow:0 15px 38px #101b2d08}
+  .feature+.feature{border-left:1px solid var(--line)}
+  .feature:before{content:"";position:absolute;left:0;top:0;width:56px;height:3px;background:var(--blue)}
+  .feature:nth-child(2):before{background:var(--m-dark)}
+  .feature:nth-child(3):before{background:var(--m-red)}
+  .feature-top{margin-bottom:39px}
+  .feature h3{font-size:24px;min-height:65px}
+  .feature p{font-size:15px;min-height:0;margin-bottom:32px}
+  .feature-label{margin-top:auto}
+
+  .compatibility-section{background:linear-gradient(90deg,var(--off-white) 0,var(--off-white) 34%,var(--paper) 34%)}
+  .compatibility-section>.container{display:grid;grid-template-columns:minmax(285px,360px) minmax(0,1fr);column-gap:76px;align-items:start}
+  .compatibility-section .section-heading{display:block;grid-column:1;grid-row:1;margin:0;padding-top:6px}
+  .compatibility-section .section-heading>p{max-width:330px;margin-top:27px;font-size:15px}
+  #compatibility-app{grid-column:2;grid-row:1}
+  .compatibility-grid{max-width:none;margin:0;background:var(--paper);box-shadow:0 18px 55px #101b2d0b}
+  .compatibility-grid.is-checked{max-width:none;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)}
+  .compatibility-fields{padding:36px;gap:22px 20px}
+  .compatibility-summary{padding:36px}
+  .compatibility-summary h3{font-size:31px}
+  #compatibility-fallback{grid-column:2;margin-top:22px}
+  .compatibility-research{margin-top:23px;background:transparent}
+
+  .demo-section>.container{display:grid;grid-template-columns:minmax(285px,350px) minmax(0,1fr);gap:76px;align-items:start}
+  .demo-section .section-heading{display:block;margin:0;padding-top:6px}
+  .demo-section .section-heading:after{content:"REAL VEHICLES · ORIGINAL INTERIORS";display:block;margin-top:34px;padding-top:20px;border-top:1px solid var(--line);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--muted)}
+  .demo-grid{grid-template-columns:repeat(2,minmax(280px,1fr));justify-content:stretch;gap:24px}
+  .demo-card{border-color:#d4dce5;box-shadow:0 18px 50px #101b2d0c}
+  .demo-card-heading{padding:25px 25px 23px}
+  .demo-card-heading h3{font-size:24px}
+  .demo-description{padding:21px 25px 24px;font-size:14px}
+
+  .process-section{padding:104px 0}
+  .process-grid{grid-template-columns:minmax(330px,.75fr) minmax(0,1.25fr);gap:130px}
+  .process-intro h2{font-size:50px}
+  .steps{counter-reset:steps}
+  .steps li{align-items:flex-start;padding:0 0 29px;margin-bottom:29px}
+  .steps h3{font-size:21px;margin-top:5px}
+  .steps p{font-size:15px;max-width:590px}
+
+  .faq-grid{grid-template-columns:minmax(330px,.72fr) minmax(0,1.28fr);gap:125px}
+  .faq-grid>div:first-child{padding-top:5px}
+  .faq-list{border-top-color:#cbd5e0}
+  .faq-list summary{font-size:16px;padding:24px 2px}
+  .faq-list details p{max-width:680px;font-size:15px}
+
+  .contact-section{padding:92px 0}
+  .contact-grid{grid-template-columns:minmax(0,1fr) 490px;gap:125px}
+  .contact-grid h2{font-size:54px}
+  .contact-grid>div>p:not(.eyebrow){font-size:16px;max-width:520px}
+  .contact-checklist{display:grid;grid-template-columns:repeat(2,minmax(175px,220px));gap:10px 28px;margin-top:30px}
+  .contact-checklist:before{content:"WHAT TO SEND";grid-column:1/-1;font-size:9px;font-weight:700;letter-spacing:1.6px;color:#8fa4bb;margin-bottom:2px}
+  .contact-checklist span{display:flex;align-items:center;gap:10px;border:0;padding:3px 0;color:#d7e2ef;font-size:12px}
+  .contact-checklist span:before{content:"✓";display:grid;place-items:center;width:18px;height:18px;border:1px solid #55708d;border-radius:50%;color:var(--m-light);font-size:10px}
+  .contact-panel{padding:37px;background:#081629;border-color:#3d5068;box-shadow:0 24px 55px #00000024}
+  .phone-number{font-size:40px;margin:17px 0 25px}
+  .site-footer{padding:38px 0}
+}
