@@ -54,6 +54,7 @@
     const result=data.assess(model.value,Number(year.value));
     const customer=data.customerResult(model.value,Number(year.value));
     title.textContent=customer.title;detail.textContent=customer.detail;
+    form.querySelector('.compatibility-status').textContent=customer.status==='potential'?'* PHOTO CONFIRMATION RECOMMENDED':'PHOTO CONFIRMATION RECOMMENDED';
     vehicle.textContent=vehicleLabel();summary.dataset.status=customer.status;
     platforms.textContent=result.matches.length?'Technical platform references: '+result.matches.map(row=>row.chassis).join(' · '):'';
     platforms.hidden=!result.matches.length;refs.replaceChildren();

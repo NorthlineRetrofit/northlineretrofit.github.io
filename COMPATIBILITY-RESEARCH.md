@@ -8,7 +8,7 @@ The website offers 36 model/body-style choices and 50 platform screening rows. T
 
 The data deliberately separates customer-facing model names from platform research windows. Years are approximate enquiry windows, not an assertion that every listed chassis was produced or sold in every market throughout that interval. All years remain selectable, including those outside the research windows. Out-of-range and unknown selections go to individual review; they are not rejected as incompatible. Engine badges and M Sport appearance packages do not establish the infotainment hardware. The customer selects only the model family and year; exact variant and hardware details are confirmed privately with the installer.
 
-The explicit check returns “Potentially compatible” only when a researched platform window matches without an extra review flag. All other cases return “Needs a manual check,” not “incompatible.” Both require a dashboard photo before confirmation. Technical platform codes and research references remain in a collapsed disclosure rather than the primary customer result.
+The explicit check returns “Compatible*” only when a researched platform window matches without an extra review flag. All other cases return “Needs a manual check,” not “incompatible.” The asterisk refers to “Photo confirmation recommended.” The result describes documented options for a model range, not verified fitment of an individual car. Technical platform codes and research references remain in a collapsed disclosure rather than the primary customer result.
 
 ## Sources and findings
 

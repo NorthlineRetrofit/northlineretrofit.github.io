@@ -104,7 +104,7 @@
   }
   function customerResult(model,year){
     const result=assess(model,year);
-    if(result.matches.length&&!result.matches.some(row=>row.review))return{status:'potential',title:'Potentially compatible',detail:'CarPlay retrofit options are documented for this model range. We need a dashboard photo to confirm your factory screen and the right kit.'};
+    if(result.matches.length&&!result.matches.some(row=>row.review))return{status:'potential',title:'Compatible*',detail:'CarPlay retrofit options are documented for this model range. A dashboard photo is recommended to verify your factory screen and the right kit.'};
     let detail='We can’t confirm this model/year from the guide. Send a dashboard photo and we’ll check your options—an upgrade may still be possible.';
     if(result.matches.some(row=>row.review==='mixed'))detail='Your BMW may have different factory systems or already have CarPlay. Send a dashboard photo so we can check the right option for you.';
     else if(result.matches.some(row=>row.review==='screen'))detail='Screen size changes the options for this BMW. Send a dashboard photo so we can check your display before confirming compatibility.';
