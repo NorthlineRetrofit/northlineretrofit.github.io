@@ -39,23 +39,37 @@ function setupVehicleSelectors(container) {
 function vehicleDescription(container) {
   const value = name => container.querySelector('[name=' + name + ']').value.trim();
   const details = container.querySelector('[name=vehicleDetails]');
-  return value('year') + ' ' + value('make') + ' ' + value('model') +
-    (!details.disabled && details.value.trim() ? ' (' + details.value.trim() + ')' : '');
+  const known = [value('year'), value('make'), value('model')].filter(v => v && v !== OTHER_VEHICLE);
+  const extra = !details.disabled && details.value.trim();
+  if (extra) known.push(extra);
+  if (!known.length) return 'Vehicle details to confirm';
+  if (!extra && (!value('make') || value('make') === OTHER_VEHICLE || value('model') === OTHER_VEHICLE)) known.push('vehicle — details to confirm');
+  return known.join(' ');
 }
 function setContactLinks(container, message) {
   const isApple = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   container.querySelector('[data-sms]').href = `sms:${NORTHLINE.phone}${isApple ? '&' : '?'}body=${encodeURIComponent(message)}`;
   container.querySelector('[data-whatsapp]').href = `https://wa.me/${NORTHLINE.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+  container.dataset.message = message;
+}
+async function copyMessage(message, status) {
+  try { await navigator.clipboard.writeText(message.value); status.textContent = 'Message copied. Paste it into your preferred messaging app.'; }
+  catch {
+    const preview = message.closest('details'); if (preview) preview.open = true;
+    message.focus(); message.select();
+    status.textContent = 'Your message is selected. Use your device’s Copy command.';
+  }
 }
 function showResult(form, result, heading) {
   form.hidden = true; result.hidden = false;
+  document.querySelector('.mobile-bar')?.classList.remove('form-active');
   heading.focus({ preventScroll: true });
   result.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
   const mobileButton = document.querySelector('.mobile-bar .btn');
   if (mobileButton) {
     if (!mobileButton.dataset.originalHref) { mobileButton.dataset.originalHref = mobileButton.getAttribute('href'); mobileButton.dataset.originalLabel = mobileButton.textContent; }
     mobileButton.href = result.querySelector('[data-sms]').href;
-    mobileButton.textContent = form.id === 'fleet-form' ? 'Text my vehicle list ↗' : result.dataset.availability === 'yes' ? 'Confirm my vehicle ↗' : 'Ask about upgrade options ↗';
+    mobileButton.textContent = form.id === 'fleet-form' ? 'Text my vehicle list ↗' : result.dataset.availability === 'yes' ? 'Confirm my vehicle ↗' : 'Ask about options ↗';
   }
 }
 function restoreForm(form, result) {
@@ -72,27 +86,33 @@ const ownerForm = document.querySelector('#owner-form');
 if (ownerForm) {
   setupVehicleSelectors(ownerForm);
   const result = document.querySelector('#owner-result');
-  ownerForm.addEventListener('submit', event => {
-    event.preventDefault();
+  function renderOwnerResult(manual = false) {
     const data = new FormData(ownerForm);
-    const model = data.get('model').trim();
-    if (!model) { ownerForm.elements.model.setCustomValidity('Please choose your model.'); ownerForm.reportValidity(); return; }
+    const model = String(data.get('model') || '').trim();
+    if (!manual && !model) { ownerForm.elements.model.setCustomValidity('Please choose your model.'); ownerForm.reportValidity(); return; }
     const vehicle = vehicleDescription(ownerForm);
-    const available = checkVehicleAvailability(data.get('make'), model, data.get('year'));
+    const available = !manual && checkVehicleAvailability(data.get('make'), model, data.get('year'));
     const heading = document.querySelector('#owner-result-title'); heading.textContent = vehicle;
     result.dataset.availability = available ? 'yes' : 'no';
     document.querySelector('#owner-verdict').textContent = available ? 'Yes — compatible*' : 'Needs a manual check';
     document.querySelector('#owner-verdict-note').textContent = available
       ? '*A CarPlay kit is listed for this model and year. Photo confirmation recommended to verify your factory system and installed price.'
       : 'Let’s review your vehicle individually. Send a photo of the main menu and center console so we can check available kits or screen upgrades.';
-    result.querySelector('[data-sms]').textContent = available ? 'Confirm via text ↗' : 'Ask about options via text ↗';
+    result.querySelector('[data-sms]').textContent = available ? 'Confirm via text ↗' : 'Ask via text ↗';
     result.querySelector('[data-whatsapp]').textContent = available ? 'Confirm via WhatsApp ↗' : 'Ask via WhatsApp ↗';
     const request = available
       ? 'Your checker shows a listed CarPlay option. Please confirm my factory setup and installed price. I will attach a photo of the main menu and center console.'
       : 'Your checker recommends a manual check. Could you check other CarPlay kits or screen upgrades? I will attach a photo of the main menu and center console.';
     setContactLinks(result, `Hi Northline Retrofit! My vehicle is ${vehicle}. ${request} My installation location is: `);
+    document.querySelector('#owner-message').value = result.dataset.message;
+    document.querySelector('[data-owner-copy-status]').textContent = '';
     showResult(ownerForm, result, heading);
+  }
+  ownerForm.addEventListener('submit', event => {
+    event.preventDefault(); renderOwnerResult();
   });
+  document.querySelector('[data-manual-check]').addEventListener('click', () => renderOwnerResult(true));
+  document.querySelector('[data-copy-owner]').addEventListener('click', () => copyMessage(document.querySelector('#owner-message'), document.querySelector('[data-owner-copy-status]')));
   ownerForm.elements.model.addEventListener('input', () => ownerForm.elements.model.setCustomValidity(''));
   document.querySelector('[data-edit-owner]').addEventListener('click', () => restoreForm(ownerForm, result));
 }
@@ -108,16 +128,42 @@ if (fleetForm) {
     add.disabled = all.length >= 10;
     add.textContent = all.length >= 10 ? '10 vehicles added — mention any others in your message' : '＋ Add another vehicle';
   }
+  function setCollapsed(row, collapsed) {
+    row.classList.toggle('is-collapsed', collapsed);
+    const button = row.querySelector('.fleet-edit');
+    button.setAttribute('aria-expanded', String(!collapsed));
+    button.textContent = collapsed ? 'Edit' : 'Done';
+    row.querySelector('.fleet-row-summary').textContent = collapsed ? vehicleDescription(row) : 'Vehicle details';
+  }
+  function collapseCompletedRows() {
+    for (const row of rows.children) {
+      const complete = [...row.querySelectorAll('input,select')].every(input => input.disabled || input.checkValidity());
+      if (complete) setCollapsed(row, true);
+    }
+  }
   function addVehicle(focus = true) {
     const id = ++serial;
     const fieldset = document.createElement('fieldset'); fieldset.className = 'fleet-row';
     fieldset.innerHTML = `<legend>Vehicle</legend><div class="fields"><div class="field full"><label for="make-${id}">Make</label><select id="make-${id}" name="make" required><option value="">Choose a brand</option></select></div><div class="field full"><label for="model-${id}">Model</label><select id="model-${id}" name="model" required disabled><option value="">Choose a make first</option></select></div><div class="field"><label for="year-${id}">Year</label><input id="year-${id}" name="year" type="number" min="1980" max="2027" inputmode="numeric" placeholder="e.g. 2016" required></div><div class="field full" data-vehicle-details hidden><label for="vehicle-details-${id}">Vehicle details (optional)</label><input id="vehicle-details-${id}" name="vehicleDetails" maxlength="100" placeholder="Tell us the make or model, if known" disabled></div></div><button type="button" class="remove-row">Remove vehicle</button>`;
     setupVehicleSelectors(fieldset);
+    const header = document.createElement('div'); header.className = 'fleet-row-heading';
+    header.innerHTML = `<strong class="fleet-row-summary">Vehicle details</strong><button type="button" class="fleet-edit" aria-expanded="true" aria-controls="vehicle-fields-${id}">Done</button>`;
+    fieldset.querySelector('.fields').id = `vehicle-fields-${id}`;
+    fieldset.insertBefore(header, fieldset.querySelector('.fields'));
+    header.querySelector('button').addEventListener('click', () => {
+      if (fieldset.classList.contains('is-collapsed')) { setCollapsed(fieldset, false); fieldset.querySelector('select').focus(); }
+      else {
+        const invalid = [...fieldset.querySelectorAll('input,select')].find(input => !input.disabled && !input.checkValidity());
+        if (invalid) { invalid.reportValidity(); return; }
+        setCollapsed(fieldset, true);
+      }
+    });
+    fieldset.addEventListener('invalid', () => setCollapsed(fieldset, false), true);
     fieldset.querySelector('.remove-row').addEventListener('click', () => { fieldset.remove(); renumber(); add.focus(); });
     fieldset.querySelector('[name=model]').addEventListener('input', e => e.target.setCustomValidity(''));
     rows.append(fieldset); renumber(); if (focus) fieldset.querySelector('select').focus();
   }
-  addVehicle(false); add.addEventListener('click', () => addVehicle());
+  addVehicle(false); add.addEventListener('click', () => { collapseCompletedRows(); addVehicle(); });
   fleetForm.elements.location.addEventListener('input', e => e.target.setCustomValidity(''));
   fleetForm.addEventListener('submit', event => {
     event.preventDefault();
@@ -129,12 +175,37 @@ if (fleetForm) {
     document.querySelector('#copy-status').textContent = '';
     showResult(fleetForm, result, heading);
   });
-  document.querySelector('[data-edit-fleet]').addEventListener('click', () => restoreForm(fleetForm, result));
-  document.querySelector('#copy-message').addEventListener('click', async () => {
-    const message = document.querySelector('#fleet-message'); const status = document.querySelector('#copy-status');
-    try { await navigator.clipboard.writeText(message.value); status.textContent = 'Message copied. Paste it into your preferred messaging app.'; }
-    catch { message.focus(); message.select(); status.textContent = 'Your message is selected. Use your device’s Copy command.'; }
-  });
+  document.querySelector('[data-edit-fleet]').addEventListener('click', () => { setCollapsed(rows.firstElementChild, false); restoreForm(fleetForm, result); });
+  document.querySelector('#copy-message').addEventListener('click', () => copyMessage(document.querySelector('#fleet-message'), document.querySelector('#copy-status')));
+}
+
+// Form anchors stay useful after results; never discard a customer's entries.
+document.querySelectorAll('[data-form-jump]').forEach(link => link.addEventListener('click', event => {
+  const href = link.getAttribute('href');
+  if (!href?.startsWith('#')) return;
+  const panel = document.querySelector(href);
+  const form = panel?.querySelector('form');
+  const result = panel?.querySelector('.result');
+  if (!panel || !form) return;
+  event.preventDefault();
+  const target = result && !result.hidden ? result : panel;
+  target.scrollIntoView({block:'start', behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+  // Focus the heading, not an input, so tapping the CTA doesn't open the phone keyboard.
+  const heading = target.querySelector('h3');
+  if (heading) { heading.tabIndex = -1; heading.focus({preventScroll:true}); }
+}));
+// Yield screen space to the keyboard or the visible submit button on phones.
+const activeForm = ownerForm || fleetForm;
+const bottomBar = document.querySelector('.mobile-bar');
+if (activeForm && bottomBar) {
+  let submitVisible = false;
+  const refreshBar = () => {
+    const editing = activeForm.contains(document.activeElement) && document.activeElement.matches('input,select,textarea');
+    bottomBar.classList.toggle('form-active', !activeForm.hidden && (submitVisible || editing));
+  };
+  new IntersectionObserver(entries => { submitVisible = entries[0].isIntersecting; refreshBar(); }, {rootMargin:'-90px 0px 0px 0px',threshold:0.1}).observe(activeForm.querySelector('[type=submit]'));
+  document.addEventListener('focusin', refreshBar);
+  document.addEventListener('focusout', () => requestAnimationFrame(refreshBar));
 }
 const allVideos = [...document.querySelectorAll('video')];
 allVideos.forEach(video => video.addEventListener('play', () => allVideos.forEach(other => { if (other !== video) other.pause(); })));
@@ -162,6 +233,8 @@ document.querySelectorAll('[data-installation-gallery]').forEach(gallery => {
   const mobile = matchMedia('(max-width:760px)');
   const reducedMotion = matchMedia('(prefers-reduced-motion:reduce)');
   const status = gallery.querySelector('[data-installation-status]');
+  const navigation = gallery.querySelector('.installation-nav');
+  const statusRow = status.closest('.installation-status');
   const names = ['2009 BMW X5', '2013 BMW X5', '2015 BMW 328i GT'];
   let selected = 0, frame;
   gallery.classList.add('gallery-ready');
@@ -193,7 +266,15 @@ document.querySelectorAll('[data-installation-gallery]').forEach(gallery => {
       if (index !== selected) { selected = index; render(); }
     });
   });
-  const resetLayout = () => { render(); scrollToSelected(); };
+  function placeControls() {
+    // Match reading/tab order to the mobile visual order without cloning controls.
+    if (mobile.matches && (navigation.nextElementSibling !== statusRow || statusRow.nextElementSibling !== track)) {
+      track.before(navigation, statusRow);
+    } else if (!mobile.matches && track.nextElementSibling !== navigation) {
+      track.after(navigation, statusRow);
+    }
+  }
+  const resetLayout = () => { placeControls(); render(); scrollToSelected(); };
   mobile.addEventListener('change', resetLayout);
   window.addEventListener('resize', resetLayout);
   function followAnchor() {
@@ -206,5 +287,5 @@ document.querySelectorAll('[data-installation-gallery]').forEach(gallery => {
     // Crop only the poster. Playback always reveals the complete original frame.
     video.addEventListener('play', () => { video.dataset.started = 'true'; });
   });
-  render(); followAnchor();
+  placeControls(); render(); followAnchor();
 });
