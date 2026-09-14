@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://northlineretrofit.github.io/sitemap.xml
