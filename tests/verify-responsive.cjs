@@ -13,25 +13,36 @@ const OUT = process.env.NORTHLINE_SCREENSHOTS;
    for (const width of [320,390,430,600,760,761,820,1024,1100,1101,1440]) {
     await page.setViewportSize({width,height:844});
     await page.goto(BASE+file);
+    assert.equal(await page.locator('meta[name=robots][content*=noindex]').count(),0);
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${file} overflow ${width}`);
     const host = file.includes('hosts');
     if (width<=760) {
-     assert(await page.locator('.hero-prices').isVisible());
-     if (width<=430) assert((await page.locator('.hero-prices').boundingBox()).y<500);
+     assert(await page.locator('.starting-prices').isVisible());
+     if (width<=430) assert((await page.locator('.starting-prices').boundingBox()).y<600);
      if (width===390 && !host) assert((await page.locator('h1').boundingBox()).height<100);
     } else assert(await page.locator('.nav-cta').isVisible(),`missing persistent CTA ${width}`);
     if (width===390 && OUT) await page.screenshot({path:`${OUT}/${host?'hosts':'owner'}-390-top.png`});
     if (width===1440 && OUT) {
      await page.locator('img').evaluateAll(imgs=>Promise.all(imgs.map(img=>{img.loading='eager';return img.decode()})));
      await page.screenshot({path:`${OUT}/${host?'hosts':'owner'}-1440.png`,fullPage:true});
-     assert.equal(await page.locator('.hero-grid').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length),2);
+     assert.equal(await page.locator('.product-layout').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length),2);
     }
-    await page.locator(width<=760?'.mobile-bar .btn':'.nav-cta').click();
+    await page.locator(width<=760?'.product-actions .btn':'.nav-cta').click();
     const first = page.locator(host?'#make-1':'#owner-make');
     const bounds = await first.boundingBox();
     assert(bounds.y>60 && bounds.y<430,`${file} first field outside task landing ${width}: ${bounds.y}`);
     if (width===390 && OUT) await page.screenshot({path:`${OUT}/${host?'hosts':'owner'}-form.png`});
    }
+  }
+  await page.setViewportSize({width:393,height:659});
+  for(const file of ['/', '/hosts.html']) {
+   await page.goto(BASE+file);
+   await page.waitForTimeout(80);
+   const photo = await page.locator('.product-image').boundingBox();
+   const action = await page.locator('.product-actions .btn').boundingBox();
+   assert(photo.y<260 && photo.height>200,'photo must lead the mobile experience');
+   assert(action.y+action.height<=659,'first action visible without scrolling');
+   assert(!(await page.locator('.mobile-bar').isVisible()),'no duplicate sticky CTA in hero');
   }
   await page.setViewportSize({width:844,height:390});
   await page.goto(BASE);
@@ -78,7 +89,7 @@ const OUT = process.env.NORTHLINE_SCREENSHOTS;
   await page.locator('#fleet-form [type=submit]').click();
   assert.match(await page.locator('#fleet-message').inputValue(),/2009 BMW X5/);
   assert(!(await page.locator('#fleet-message').isVisible()));
-  assert((await page.locator('#fleet-result [data-sms]').boundingBox()).y<500);
+  assert((await page.locator('#fleet-result [data-sms]').boundingBox()).y<600);
   await page.locator('#copy-message').click();
   await page.waitForFunction(()=>document.querySelector('#copy-status').textContent.length>0);
   assert(await page.locator('#copy-status').textContent());

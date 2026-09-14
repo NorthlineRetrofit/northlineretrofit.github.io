@@ -197,6 +197,14 @@ document.querySelectorAll('[data-form-jump]').forEach(link => link.addEventListe
 // Yield screen space to the keyboard or the visible submit button on phones.
 const activeForm = ownerForm || fleetForm;
 const bottomBar = document.querySelector('.mobile-bar');
+const heroAction = document.querySelector('.product-actions .btn');
+if (bottomBar && heroAction) {
+  // The hero already has the primary action. Show the fixed action only after it passes.
+  bottomBar.classList.add('hero-active');
+  new IntersectionObserver(entries => {
+    bottomBar.classList.toggle('hero-active', entries[0].boundingClientRect.bottom > 84);
+  }, {rootMargin:'-84px 0px 0px 0px',threshold:[0,1]}).observe(heroAction);
+}
 if (activeForm && bottomBar) {
   let submitVisible = false;
   const refreshBar = () => {
